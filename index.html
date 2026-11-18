@@ -943,6 +943,790 @@ body.tl-open{ overflow:hidden; }
 .gm-box:has(.gm-c4){ width:min(100%,760px); }
 .gm-cards:has(.gm-c4){ grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
 @media (max-width:600px){ .gm-cards:has(.gm-c4){ grid-template-columns:repeat(2,1fr); } }
+/* ============================================================
+   GAME 5 — CHUI LỖ TƯỜNG (tiền tố wl-)
+   Bé đọc to từ trên tường → hình chữ Hán đổi khớp lỗ → chui qua tường
+============================================================ */
+.wl-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: #BFE8FF;
+  color: var(--ink);
+  font-family: var(--font-vn);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wl-overlay.wl-on {
+  display: flex;
+}
+
+.wl-overlay button {
+  font-family: var(--font-vn);
+  cursor: pointer;
+}
+
+/* ---------- thanh trên cùng ---------- */
+.wl-bar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, .82);
+  border-bottom: 3px solid #F0B25E;
+}
+
+.wl-icon-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border: 2px solid #F0B25E;
+  border-radius: 14px;
+  background: #FFF6E3;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+}
+
+.wl-icon-btn:active {
+  transform: scale(.93);
+}
+
+.wl-stage {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.wl-prog-wrap {
+  flex: 1;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.wl-prog-wrap .gd-prog {
+  width: 100%;
+  background: #E6E0F5;
+  border-color: #C9BDE8;
+}
+
+.wl-hearts {
+  display: flex;
+  gap: 1px;
+  font-size: 18px;
+}
+
+.wl-score {
+  font-weight: 700;
+  font-size: 17px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #FFF1C9;
+  border: 2px solid #F0B25E;
+  white-space: nowrap;
+}
+
+/* ---------- dải "đúng liền 5 câu" ---------- */
+.wl-meter {
+  position: absolute;
+  z-index: 4;
+  top: 62px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.wl-pips {
+  display: flex;
+  gap: 4px;
+}
+
+.wl-pip {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .75);
+  border: 2px solid #F0B25E;
+}
+
+.wl-pip.on {
+  background: #FF7E94;
+  border-color: #E8536F;
+}
+
+.wl-combo {
+  position: absolute;
+  z-index: 4;
+  top: 60px;
+  right: 14px;
+  font-weight: 700;
+  font-size: 20px;
+  color: #E8536F;
+  text-shadow: 0 2px 0 #fff;
+  min-height: 24px;
+}
+
+/* ---------- cảnh ---------- */
+.wl-scene {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #A9DEFF 0%, #D8F1FF 38%, #BFE6A8 38.1%, #9BD487 100%);
+}
+
+.wl-hill {
+  position: absolute;
+  top: 24%;
+  width: 60%;
+  height: 16%;
+  border-radius: 50% 50% 0 0;
+  background: #B4E3A0;
+}
+
+.wl-hill.h1 {
+  left: -10%;
+}
+
+.wl-hill.h2 {
+  right: -14%;
+  width: 70%;
+  background: #A5DB92;
+}
+
+.wl-cloud {
+  position: absolute;
+  font-size: 44px;
+  opacity: .9;
+  animation: wl-drift linear infinite;
+}
+
+.wl-cloud.c1 {
+  top: 6%;
+  animation-duration: 60s;
+}
+
+.wl-cloud.c2 {
+  top: 16%;
+  font-size: 32px;
+  animation-duration: 80s;
+  animation-delay: -30s;
+}
+
+@keyframes wl-drift {
+  from {
+    transform: translateX(-20vw);
+  }
+  to {
+    transform: translateX(120vw);
+  }
+}
+
+/* đường chạy: lề đỏ trắng + mặt đường xanh đen */
+.wl-curb,
+.wl-lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 36%;
+}
+
+.wl-curb {
+  clip-path: polygon(43% 0, 57% 0, 108% 100%, -8% 100%);
+  background: repeating-linear-gradient(180deg, #E8536F 0 22px, #fff 22px 44px);
+  animation: wl-curb-run 1.1s linear infinite;
+}
+
+.wl-lane {
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+  background: repeating-linear-gradient(180deg, #46557A 0 46px, #3E4C70 46px 92px);
+  animation: wl-lane-run 1.3s linear infinite;
+}
+
+@keyframes wl-curb-run {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 44px;
+  }
+}
+
+@keyframes wl-lane-run {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 92px;
+  }
+}
+
+.wl-overlay.wl-still .wl-curb,
+.wl-overlay.wl-still .wl-lane {
+  animation-play-state: paused;
+}
+
+/* ---------- bức tường gỗ ---------- */
+.wl-wall {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 50% 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3% 4% 5%;
+  border-radius: 10px;
+  border: 4px solid #B9854A;
+  background:
+    repeating-linear-gradient(90deg, rgba(150, 95, 40, .16) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .10) 0 3px, transparent 3px 9px),
+    linear-gradient(180deg, #F3C78C 0%, #E7B06C 100%);
+  box-shadow:
+    0 14px 0 -4px rgba(60, 40, 20, .25),
+    0 22px 28px rgba(40, 30, 60, .30);
+  will-change: transform;
+}
+
+.wl-wall.wl-bonk {
+  animation: wl-bonk .5s;
+}
+
+@keyframes wl-bonk {
+  0%, 100% {
+    margin-left: 0;
+  }
+  20% {
+    margin-left: -12px;
+  }
+  45% {
+    margin-left: 12px;
+  }
+  70% {
+    margin-left: -7px;
+  }
+}
+
+.wl-py {
+  font-family: var(--font-vn);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--wl-pyc, #19B6D2);
+  text-shadow:
+    -2px -2px 0 #fff,
+    2px -2px 0 #fff,
+    -2px 2px 0 #fff,
+    2px 2px 0 #fff,
+    0 4px 0 rgba(0, 0, 0, .25);
+  letter-spacing: .5px;
+}
+
+.wl-hole {
+  white-space: nowrap;
+  font-family: var(--font-zh);
+  font-weight: 700;
+  line-height: 1;
+  color: #2D2A3A;
+  text-shadow:
+    1px 2px 0 rgba(255, 255, 255, .45),
+    -1px -1px 0 rgba(0, 0, 0, .55);
+}
+
+.wl-vn {
+  font-family: var(--font-vn);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.15;
+  color: #6B3F12;
+  text-align: center;
+  background: rgba(255, 246, 227, .78);
+  padding: 2px 12px;
+  border-radius: 999px;
+}
+
+/* ---------- nhân vật mèo ---------- */
+.wl-piece {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 12px 8px rgba(0, 0, 0, .25));
+}
+
+.wl-piece svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: wl-idle 1.2s ease-in-out infinite;
+}
+
+.wl-piece .eye-happy,
+.wl-piece .eye-dizzy,
+.wl-piece .mouth-big {
+  display: none;
+}
+
+.wl-piece.wl-good .eye-open,
+.wl-piece.wl-crash .eye-open {
+  display: none;
+}
+
+.wl-piece.wl-good .eye-happy,
+.wl-piece.wl-crash .eye-dizzy {
+  display: inline;
+}
+
+.wl-piece.wl-good .mouth-ok {
+  display: none;
+}
+
+.wl-piece.wl-good .mouth-big {
+  display: inline;
+}
+
+.wl-piece.wl-good svg {
+  animation: wl-hop .5s ease-out;
+}
+
+.wl-piece.wl-crash svg {
+  animation: wl-shake .5s;
+}
+
+@keyframes wl-idle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes wl-hop {
+  0% {
+    transform: translateY(0) scale(.9, 1.1);
+  }
+  50% {
+    transform: translateY(-34px) scale(1.1, .95);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wl-shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+  75% {
+    transform: rotate(-7deg);
+  }
+}
+
+/* ---------- micro ---------- */
+.wl-mic {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.wl-mic .wl-mic-ico {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.wl-mic.wl-show {
+  display: flex;
+}
+
+.wl-mic-ico {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: #fff;
+  border: 3px solid #6A9FD0;
+  box-shadow: 0 5px 0 #6A9FD0;
+}
+
+.wl-mic.wl-live .wl-mic-ico {
+  border-color: #E8536F;
+  box-shadow: 0 0 0 0 rgba(232, 83, 111, .5);
+  animation: wl-ripple 1.3s infinite;
+}
+
+@keyframes wl-ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(232, 83, 111, .55);
+  }
+  100% {
+    box-shadow: 0 0 0 22px rgba(232, 83, 111, 0);
+  }
+}
+
+.wl-heard {
+  min-height: 30px;
+  max-width: 80vw;
+  padding: 2px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .9);
+  font-family: var(--font-zh);
+  font-size: 20px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.wl-heard.wl-show {
+  opacity: 1;
+}
+
+.wl-note {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  max-width: 90%;
+  padding: 6px 14px;
+  border-radius: 14px;
+  background: #FFF1F1;
+  border: 2px solid #FF8A8A;
+  font-size: 15px;
+  text-align: center;
+  display: none;
+}
+
+.wl-note.wl-show {
+  display: block;
+}
+
+/* ---------- hiệu ứng nổ ---------- */
+.wl-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.wl-spark {
+  position: absolute;
+  font-size: 28px;
+  animation: wl-fly .9s ease-out forwards;
+}
+
+@keyframes wl-fly {
+  from {
+    transform: translate(0, 0) scale(.6);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(1.3);
+    opacity: 0;
+  }
+}
+
+.wl-banner {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  top: 20%;
+  transform: translate(-50%, -50%) scale(.6);
+  font-size: 44px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 4px 0 #E8536F, 0 0 18px rgba(0, 0, 0, .25);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.wl-banner.wl-show {
+  animation: wl-banner .9s ease-out;
+}
+
+@keyframes wl-banner {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.5);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80%) scale(1);
+  }
+}
+
+/* ---------- màn mở đầu / kết thúc / hộp xác nhận ---------- */
+.wl-cover,
+.wl-confirm {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  background: rgba(60, 45, 100, .55);
+  overflow-y: auto;
+}
+
+.wl-cover.wl-on,
+.wl-confirm.wl-on {
+  display: flex;
+}
+
+.wl-card {
+  width: min(100%, 440px);
+  margin: auto;
+  padding: 22px 18px;
+  border-radius: 26px;
+  background: #FFFDF8;
+  border: 4px solid #F0B25E;
+  box-shadow: 0 8px 0 #F0B25E;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.wl-card h2 {
+  margin: 0;
+  font-size: clamp(22px, 5vw, 30px);
+  color: #D9822B;
+}
+
+.wl-big {
+  font-size: 72px;
+  line-height: 1;
+  animation: rk-bob 2.4s ease-in-out infinite;
+}
+
+.wl-subt {
+  margin: 0;
+  font-size: 18px;
+  color: var(--ink-soft);
+}
+
+.wl-bonus {
+  font-size: 22px;
+  font-weight: 700;
+  color: #D9822B;
+}
+
+.wl-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wl-go {
+  border: 3px solid #D9822B;
+  background: #FFB84D;
+  color: #fff;
+  border-radius: 18px;
+  padding: 10px 22px;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 5px 0 #D9822B;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .15);
+}
+
+.wl-go:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #D9822B;
+}
+
+.wl-go.wl-big-btn {
+  font-size: 24px;
+  padding: 14px 30px;
+}
+
+.wl-go.wl-mic-btn {
+  background: #FF7E94;
+  border-color: #E8536F;
+  box-shadow: 0 5px 0 #E8536F;
+}
+
+.wl-go.wl-alt {
+  background: #fff;
+  color: #D9822B;
+  border-color: #F0B25E;
+  box-shadow: 0 5px 0 #F0B25E;
+  text-shadow: none;
+}
+
+.wl-go.wl-mini {
+  padding: 8px 16px;
+  font-size: 20px;
+}
+
+.wl-stars-row {
+  font-size: 40px;
+  display: flex;
+  gap: 6px;
+}
+
+.wl-stars-row .off {
+  filter: grayscale(1);
+  opacity: .3;
+}
+
+.wl-review-t {
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.wl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wl-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #F0B25E;
+  background: #FFF6E3;
+  border-radius: 14px;
+  padding: 4px 12px;
+}
+
+.wl-chip .cp {
+  font-size: 15px;
+  color: #19A3BD;
+  font-weight: 700;
+}
+
+.wl-chip .ch {
+  font-family: var(--font-zh);
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.wl-chip .cm {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.wl-meta {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* ---------- màn hình nhỏ / nằm ngang thấp ---------- */
+@media (max-width: 560px) {
+  .wl-bar {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  .wl-icon-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 17px;
+  }
+
+  .wl-hearts {
+    font-size: 14px;
+  }
+
+  .wl-score {
+    font-size: 14px;
+    padding: 2px 8px;
+  }
+
+  .wl-stage {
+    font-size: 22px;
+  }
+
+  .wl-meter {
+    top: 54px;
+  }
+
+  .wl-combo {
+    top: 52px;
+  }
+
+  .wl-py {
+    font-size: 26px;
+  }
+
+  .wl-vn {
+    font-size: 18px;
+  }
+}
+
+@media (max-height: 460px) {
+  .wl-mic-ico {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .wl-mic {
+    bottom: 6px;
+  }
+
+  .wl-big {
+    font-size: 48px;
+  }
+
+  .wl-card {
+    padding: 12px;
+    gap: 8px;
+  }
+}
+
+.gm-c5 {
+  --gm-bg: #FFF6E3;
+  --gm-bd: #F0B25E;
+}
+
+.gm-box:has(.gm-c5) {
+  width: min(100%, 900px);
+}
+
 </style>
 </head>
 <body>
@@ -1143,6 +1927,86 @@ body.tl-open{ overflow:hidden; }
   </div>
 </div>
 
+<!-- ================= GAME 5: CHUI LỖ TƯỜNG ================= -->
+<div class="wl-overlay" id="wl-overlay" aria-label="Trò chơi: Chui lỗ tường">
+  <div class="wl-bar">
+    <button class="wl-icon-btn" id="wl-exit" type="button" aria-label="Về menu" title="Về menu">🏠</button>
+    <div class="wl-stage" id="wl-stage"></div>
+    <div class="wl-prog-wrap" id="wl-prog"></div>
+    <div class="wl-hearts" id="wl-hearts" aria-label="Số tim còn lại"></div>
+    <div class="wl-score" id="wl-score">⭐ 0</div>
+    <button class="wl-icon-btn" id="wl-listen" type="button" aria-label="Nghe từ" title="Nghe từ (phím R)">🔊</button>
+  </div>
+  <div class="wl-meter" id="wl-meter"><span class="wl-pips" id="wl-pips"></span><span id="wl-heal">❤️</span></div>
+  <div class="wl-combo" id="wl-combo"></div>
+  <div class="wl-scene" id="wl-scene">
+    <span class="wl-hill h1"></span>
+    <span class="wl-hill h2"></span>
+    <span class="wl-cloud c1">☁️</span>
+    <span class="wl-cloud c2">☁️</span>
+    <div class="wl-curb"></div>
+    <div class="wl-lane"></div>
+    <div class="wl-wall" id="wl-wall">
+      <div class="wl-py" id="wl-py"></div>
+      <div class="wl-hole" id="wl-hole"></div>
+      <div class="wl-vn" id="wl-vn"></div>
+    </div>
+    <div class="wl-piece" id="wl-piece" aria-hidden="true">
+      <svg viewBox="0 0 130 135" xmlns="http://www.w3.org/2000/svg">
+        <path d="M94 104 C130 100 128 62 110 66" stroke="#7F93A8" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <ellipse cx="62" cy="102" rx="34" ry="28" fill="#8FA3B8"/>
+        <ellipse cx="62" cy="108" rx="20" ry="19" fill="#E9EEF3"/>
+        <ellipse cx="44" cy="127" rx="13" ry="7" fill="#E9EEF3"/>
+        <ellipse cx="80" cy="127" rx="13" ry="7" fill="#E9EEF3"/>
+        <path d="M26 46 L32 8 L54 30 Z" fill="#8FA3B8"/>
+        <path d="M98 46 L92 8 L70 30 Z" fill="#8FA3B8"/>
+        <path d="M33 38 L36 18 L47 31 Z" fill="#FFB3C1"/>
+        <path d="M91 38 L88 18 L77 31 Z" fill="#FFB3C1"/>
+        <ellipse cx="62" cy="58" rx="40" ry="34" fill="#8FA3B8"/>
+        <ellipse cx="62" cy="69" rx="25" ry="18" fill="#E9EEF3"/>
+        <g class="eye-open">
+          <ellipse cx="46" cy="54" rx="9" ry="11" fill="#fff"/>
+          <ellipse cx="78" cy="54" rx="9" ry="11" fill="#fff"/>
+          <circle cx="48" cy="56" r="5" fill="#2D2A3A"/>
+          <circle cx="76" cy="56" r="5" fill="#2D2A3A"/>
+          <circle cx="50" cy="53" r="1.8" fill="#fff"/>
+          <circle cx="78" cy="53" r="1.8" fill="#fff"/>
+        </g>
+        <g class="eye-happy" stroke="#2D2A3A" stroke-width="3.5" fill="none" stroke-linecap="round">
+          <path d="M37 58 Q46 46 55 58"/>
+          <path d="M69 58 Q78 46 87 58"/>
+        </g>
+        <g class="eye-dizzy" stroke="#2D2A3A" stroke-width="3.5" stroke-linecap="round">
+          <path d="M39 48 L53 62 M53 48 L39 62"/>
+          <path d="M71 48 L85 62 M85 48 L71 62"/>
+        </g>
+        <ellipse cx="62" cy="64" rx="5.5" ry="4" fill="#FF8FA3"/>
+        <path class="mouth-ok" d="M52 72 Q62 80 72 72" stroke="#4A3A3A" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path class="mouth-big" d="M50 72 Q62 90 74 72 Z" fill="#C2415A"/>
+        <path d="M28 66 L8 62 M28 72 L8 74 M96 66 L116 62 M96 72 L116 74" stroke="#4A3A3A" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="wl-note" id="wl-note"></div>
+    <div class="wl-mic" id="wl-mic">
+      <div class="wl-heard" id="wl-heard"></div>
+      <div class="wl-mic-ico" id="wl-mic-btn">🎤</div>
+    </div>
+    <div class="wl-fx" id="wl-fx"></div>
+    <div class="wl-banner" id="wl-banner"></div>
+    <div class="wl-cover" id="wl-cover"></div>
+    <div class="wl-confirm" id="wl-confirm">
+      <div class="wl-card">
+        <div class="wl-big">🤔</div>
+        <h2>Chơi tiếp?</h2>
+        <div class="wl-row">
+          <button class="wl-go" id="wl-d-continue" type="button">▶ Chơi tiếp</button>
+          <button class="wl-go wl-alt" id="wl-d-quit" type="button">🏠 Về menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ================= MENU CHỌN GAME ================= -->
 <div class="gm-overlay gm-on" id="gm-overlay">
   <div class="gm-box">
@@ -1174,7 +2038,7 @@ window.GD_PROG = function(i, n){
   return '<span class="gd-prog" role="img" aria-label="' + i + '/' + n + '"><i class="gd-fill" style="width:' + p + '%"></i><b class="gd-star" style="left:' + p + '%">⭐</b></span>';
 };
 /*@@GD_DATA_START@@*/
-window.GD_CFG = {"id": "mau-gia-dinh", "title_zh": "我家有几口人", "games": ["rocket", "football", "tilt", "fruit"], "rk_n": [7, 7, 6, 7], "fb_n": [6, 6, 6, 6], "tl_n": [6, 6, 6, 6], "fr_n": [6, 6, 6, 6], "conflict": [[2, 3]]};
+window.GD_CFG = {"id": "mau-gia-dinh", "title_zh": "我家有几口人", "games": ["rocket", "football", "tilt", "fruit", "wall"], "rk_n": [7, 7, 6, 7], "fb_n": [6, 6, 6, 6], "tl_n": [6, 6, 6, 6], "fr_n": [6, 6, 6, 6], "wl_n": [5, 5, 5, 5], "conflict": [[2, 3]]};
 // h: chữ Hán · py: phiên âm · vn: nghĩa · em: emoji minh hoạ
 window.GD_W = [
   {"h": "个", "py": "gè", "vn": "cái, con", "em": "🍎"},
@@ -4272,6 +5136,922 @@ window.GD_GAMES.push({ id:"fruit", ico:"🍉", desc:"Chém hoa quả", cls:"gm-c
 })();
 </script>
 
+<script>
+/* ============================================================
+   GAME 5 — CHUI LỖ TƯỜNG (game luyện nói)
+   - Chú mèo đứng trước, bức tường gỗ trượt dần về phía mèo.
+     Trên tường có: PHIÊN ÂM (trên) · lỗ hình CHỮ HÁN (giữa, một dòng) · NGHĨA (dưới).
+   - Bé ĐỌC TO từ trên tường → micro tiếng Trung (zh-CN) nghe đúng → mèo nhảy chui qua lỗ.
+     Không đọc kịp → mèo đâm vào tường, mất 1 tim, nghe mẫu rồi thử lại.
+   - Chỉ có chế độ đọc to bằng micro, không có chế độ chạm.
+   - Luật chung giống 4 game kia: 5 tim, đúng liền 5 câu hồi 1 tim (đủ tim thì 💎 +30), 4 chặng, điểm + thưởng nhanh + combo, kỷ lục.
+   Dữ liệu: chỉ dùng window.GD_W (từ vựng). Không cần câu điền từ.
+============================================================ */
+(function () {
+  "use strict";
+
+  var W = window.GD_W || [];
+  var CFG = window.GD_CFG || {};
+  var AUDIO = window.GD_AUDIO;
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var raf = window.requestAnimationFrame
+    ? window.requestAnimationFrame.bind(window)
+    : function (fn) {
+        return setTimeout(function () {
+          fn(Date.now());
+        }, 16);
+      };
+
+  // ---------- luật ----------
+  var MAXLIVES = 5;
+  var HEAL_EVERY = 5;
+  var S0 = 0.4;               // tỉ lệ nhỏ nhất của tường khi mới xuất hiện (1 = to nhất)
+  var RUSH_MS = 900;          // sau khi đọc đúng, tường lao tới trong từng này mili giây
+  var BEST_KEY = "gd_best_wall_" + (CFG.id || "bai");
+  var PY_COLORS = ["#19B6D2", "#F2B705", "#7ED321", "#FF6FA5"];
+
+  // T: số giây để tường tới nơi (bé 7 tuổi cần thời gian; có thể bật "Rơi chậm" ở game 1)
+  var STAGES = [
+    { n: 5, ico: "🚧", name: "Tường thấp", T: 20, base: 10 },
+    { n: 5, ico: "🧱", name: "Tường gỗ", T: 17, base: 15 },
+    { n: 5, ico: "🏰", name: "Tường cao", T: 14, base: 20 },
+    { n: 5, ico: "👑", name: "Tường vương giả", T: 12, base: 25 }
+  ];
+  if (CFG.wl_n && CFG.wl_n.length === 4) {
+    STAGES.forEach(function (s, i) {
+      s.n = Math.max(1, CFG.wl_n[i] | 0);
+    });
+  }
+
+  // ---------- phần tử ----------
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  var overlay = $("wl-overlay");
+  var scene = $("wl-scene");
+  var wall = $("wl-wall");
+  var wallPy = $("wl-py");
+  var wallHole = $("wl-hole");
+  var wallVn = $("wl-vn");
+  var piece = $("wl-piece");
+    var noteEl = $("wl-note");
+  var micEl = $("wl-mic");
+  var heardEl = $("wl-heard");
+  var fxEl = $("wl-fx");
+  var bannerEl = $("wl-banner");
+  var coverEl = $("wl-cover");
+  var confirmEl = $("wl-confirm");
+  var stageEl = $("wl-stage");
+  var progEl = $("wl-prog");
+  var heartsEl = $("wl-hearts");
+  var scoreEl = $("wl-score");
+  var pipsEl = $("wl-pips");
+  var healEl = $("wl-heal");
+  var comboEl = $("wl-combo");
+
+  // ---------- trạng thái ----------
+    var screen = "cover";        // "cover" | "play" | "end"
+  var lives, score, combo, streak, qi, stageIdx, stageBonus;
+  var Q = [];
+  var stageEnd = [];
+  var missed = [];
+  var target = null;
+    var tries = 0;
+  var anyMissThis = false;
+  var morphed = false;
+  var morphT = 0;
+  var t = 0;
+  var rushRate = 0;
+  var playing = false;
+  var paused = false;
+  var epoch = 0;
+  var queued = [];
+  var rafId = 0;
+  var lastTs = 0;
+
+  // hình học của cảnh
+  var sw = 360;
+  var sh = 560;
+  var horizon = 200;
+  var baseY = 500;
+  var wallW = 240;
+  var wallH = 320;
+  var pieceHome = { x: 100, y: 440 };
+  var holeFont = 90;
+  var catSize = 110;
+
+  // ---------- tiện ích ----------
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var x = a[i];
+      a[i] = a[j];
+      a[j] = x;
+    }
+    return a;
+  }
+
+  function later(fn, ms) {
+    var my = epoch;
+    setTimeout(function () {
+      if (my !== epoch) {
+        return;
+      }
+      if (paused) {
+        queued.push(fn);
+      } else {
+        fn();
+      }
+    }, ms);
+  }
+
+  function loadBest() {
+    try {
+      return parseInt(localStorage.getItem(BEST_KEY) || "0", 10) || 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function saveBest(n) {
+    try {
+      localStorage.setItem(BEST_KEY, String(n));
+    } catch (e) {}
+  }
+
+  function chars(h) {
+    return Math.max(1, h.length);
+  }
+
+  // ---------- âm thanh báo (tiếng bíp nhỏ, không cần file) ----------
+  var actx = null;
+
+  function tone(freq, dur, type, vol, delay) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      var o = actx.createOscillator();
+      var g = actx.createGain();
+      var t0 = actx.currentTime + (delay || 0);
+      o.type = type || "sine";
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(vol || 0.12, t0);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g);
+      g.connect(actx.destination);
+      o.start(t0);
+      o.stop(t0 + dur + 0.02);
+    } catch (e) {}
+  }
+
+  function sfxMorph() {
+    tone(660, 0.12, "triangle", 0.14, 0);
+    tone(990, 0.16, "triangle", 0.14, 0.09);
+  }
+
+  function sfxPass() {
+    [523, 659, 784, 1046].forEach(function (f, i) {
+      tone(f, 0.18, "sine", 0.13, i * 0.08);
+    });
+  }
+
+  function sfxBonk() {
+    tone(150, 0.3, "sawtooth", 0.14, 0);
+    tone(100, 0.35, "square", 0.1, 0.08);
+  }
+
+  function sfxStage() {
+    [392, 523, 659].forEach(function (f, i) {
+      tone(f, 0.16, "triangle", 0.12, i * 0.1);
+    });
+  }
+
+  // ---------- hình học ----------
+  function layout() {
+    sw = scene.clientWidth || 360;
+    sh = scene.clientHeight || 560;
+    horizon = sh * 0.36;
+    baseY = sh * 0.9;
+    wallH = Math.min(sh * 0.62, 430);
+    wallW = Math.min(wallH * 0.85, sw * 0.82);
+    wall.style.width = wallW + "px";
+    wall.style.height = wallH + "px";
+    wallPy.style.fontSize = Math.max(22, Math.min(40, wallW * 0.13)) + "px";
+    wallVn.style.fontSize = Math.max(16, Math.min(24, wallW * 0.075)) + "px";
+    catSize = Math.max(70, Math.min(wallW * 0.5, sh * 0.2));
+    piece.style.width = catSize + "px";
+    piece.style.height = catSize * 1.04 + "px";
+    pieceHome = { x: Math.max(sw * 0.27, catSize / 2 + 12), y: sh * 0.8 };
+  }
+
+  function sizeHole(text) {
+    holeFont = Math.max(34, Math.min(wallH * 0.34, (wallW * 0.72) / chars(text)));
+    wallHole.style.fontSize = holeFont + "px";
+  }
+
+  function wallBase(s) {
+    var bottom = horizon + (baseY - horizon) * s;
+    return "translate(" + (sw / 2 - wallW / 2) + "px," + (bottom - wallH) + "px) ";
+  }
+
+  function placeWall(tt) {
+    var s = S0 + (1 - S0) * tt;
+    wall.style.transform = wallBase(s) + "scale(" + s + ")";
+  }
+
+  function placePiece() {
+    piece.style.left = pieceHome.x + "px";
+    piece.style.top = pieceHome.y + "px";
+  }
+
+  // ---------- thanh trên ----------
+  function updateBar() {
+    var st = STAGES[stageIdx] || STAGES[0];
+    var total = stageEnd.length ? stageEnd[stageEnd.length - 1] : 0;
+    var h = "";
+    for (var i = 0; i < MAXLIVES; i++) {
+      h += "<span>" + (i < lives ? "❤️" : "🖤") + "</span>";
+    }
+    stageEl.textContent = st.ico;
+    progEl.innerHTML = window.GD_PROG ? window.GD_PROG(qi, total) : "";
+    heartsEl.innerHTML = h;
+    scoreEl.textContent = "⭐ " + score;
+    var ps = "";
+    var filled = streak % HEAL_EVERY;
+    for (var k = 0; k < HEAL_EVERY; k++) {
+      ps += '<i class="wl-pip' + (k < filled ? " on" : "") + '"></i>';
+    }
+    pipsEl.innerHTML = ps;
+    healEl.textContent = lives < MAXLIVES ? "❤️" : "💎";
+    comboEl.textContent = combo >= 3 ? "🔥 x" + combo : "";
+  }
+
+  // ---------- hiệu ứng ----------
+  function burst(x, y, list, n) {
+    for (var i = 0; i < n; i++) {
+      var sp = document.createElement("span");
+      var ang = Math.random() * Math.PI * 2;
+      var dist = 60 + Math.random() * 110;
+      sp.className = "wl-spark";
+      sp.textContent = list[i % list.length];
+      sp.style.left = x + "px";
+      sp.style.top = y + "px";
+      sp.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+      sp.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+      fxEl.appendChild(sp);
+      (function (el) {
+        setTimeout(function () {
+          if (el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        }, 1000);
+      })(sp);
+    }
+  }
+
+  function banner(text) {
+    bannerEl.textContent = text;
+    bannerEl.classList.remove("wl-show");
+    void bannerEl.offsetWidth;
+    bannerEl.classList.add("wl-show");
+  }
+
+  function note(text, ms) {
+    noteEl.textContent = text;
+    noteEl.classList.add("wl-show");
+    var my = epoch;
+    setTimeout(function () {
+      if (my === epoch) {
+        noteEl.classList.remove("wl-show");
+      }
+    }, ms || 4000);
+  }
+
+  // ---------- micro (nhận giọng nói tiếng Trung) ----------
+  var rec = null;
+  var listenWanted = false;
+  var listenStartAt = 0;
+  var heardTimer = 0;
+
+  function normalize(text) {
+    return String(text || "").replace(/[\s，。,.!?！？、；;：:'"“”‘’]/g, "");
+  }
+
+  // bé phát âm chưa chuẩn nên chấp nhận: có cả từ, hoặc có ít nhất một nửa số chữ của từ
+  function matches(heard, w) {
+    var h = normalize(heard);
+    if (!h) {
+      return false;
+    }
+    if (h.indexOf(w.h) >= 0) {
+      return true;
+    }
+    var cs = w.h.split("");
+    if (cs.length < 2) {
+      return false;
+    }
+    var hit = cs.filter(function (c) {
+      return h.indexOf(c) >= 0;
+    }).length;
+    return hit > 0 && hit >= Math.ceil(cs.length / 2);
+  }
+
+  function showHeard(text) {
+    heardEl.textContent = text || "";
+    heardEl.classList.toggle("wl-show", !!text);
+    clearTimeout(heardTimer);
+    heardTimer = setTimeout(function () {
+      heardEl.classList.remove("wl-show");
+    }, 2200);
+  }
+
+  function micFail(msg) {
+    stopListening();
+    note(msg, 6000);
+  }
+
+  function startListening() {
+    if (!SR || paused || !playing || morphed) {
+      return;
+    }
+    listenWanted = true;
+    if (rec) {
+      return;
+    }
+    try {
+      rec = new SR();
+      rec.lang = "zh-CN";
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.maxAlternatives = 3;
+      listenStartAt = Date.now();
+      rec.onresult = function (e) {
+        var texts = [];
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          for (var j = 0; j < e.results[i].length; j++) {
+            texts.push(e.results[i][j].transcript);
+          }
+        }
+        if (!texts.length) {
+          return;
+        }
+        showHeard(texts[0]);
+        if (Date.now() - listenStartAt < 250 || !target) {
+          return;
+        }
+        for (var k = 0; k < texts.length; k++) {
+          if (matches(texts[k], target)) {
+            morph();
+            return;
+          }
+        }
+      };
+      rec.onerror = function (e) {
+        if (e && (e.error === "not-allowed" || e.error === "service-not-allowed")) {
+          micFail("Chưa mở được micro. Hãy cho phép micro rồi bấm 🎤 nhé!");
+        } else if (e && e.error === "network") {
+          micFail("Micro cần có mạng. Kiểm tra mạng rồi bấm 🎤 nhé!");
+        }
+      };
+      rec.onend = function () {
+        rec = null;
+        if (listenWanted) {
+          setTimeout(startListening, 200);
+        }
+      };
+      rec.start();
+      micEl.classList.add("wl-live");
+    } catch (err) {
+      rec = null;
+    }
+  }
+
+  function stopListening() {
+    listenWanted = false;
+    micEl.classList.remove("wl-live");
+    if (rec) {
+      var r = rec;
+      rec = null;
+      r.onresult = null;
+      r.onerror = null;
+      r.onend = null;
+      try {
+        r.abort();
+      } catch (e) {}
+    }
+  }
+
+  // ---------- câu hỏi ----------
+  function buildQuestions() {
+    var total = STAGES.reduce(function (a, s) {
+      return a + s.n;
+    }, 0);
+    var bag = [];
+    var out = [];
+    for (var i = 0; i < total; i++) {
+      if (!bag.length) {
+        bag = shuffle(
+          W.map(function (_, k) {
+            return k;
+          })
+        );
+        if (out.length && bag.length > 1 && bag[bag.length - 1] === out[out.length - 1]) {
+          bag.unshift(bag.pop());
+        }
+      }
+      out.push(bag.pop());
+    }
+    stageEnd = [];
+    var acc = 0;
+    STAGES.forEach(function (s) {
+      acc += s.n;
+      stageEnd.push(acc);
+    });
+    return out;
+  }
+
+  function resetGame() {
+    epoch++;
+    lives = MAXLIVES;
+    score = 0;
+    combo = 0;
+    streak = 0;
+    qi = 0;
+    stageIdx = 0;
+    stageBonus = 0;
+    missed = [];
+    queued = [];
+    paused = false;
+    playing = false;
+    Q = buildQuestions();
+    stopListening();
+    layout();
+  }
+
+  function startQuestion(retry) {
+    var wi = Q[qi];
+    target = W[wi];
+    screen = "play";
+    if (!retry) {
+      tries = 0;
+      anyMissThis = false;
+    }
+    morphed = false;
+    morphT = 0;
+    t = 0;
+    layout();
+
+    wallPy.textContent = target.py;
+    wallPy.style.setProperty("--wl-pyc", PY_COLORS[qi % PY_COLORS.length]);
+    wallPy.style.color = PY_COLORS[qi % PY_COLORS.length];
+    wallHole.textContent = target.h;
+    wallVn.textContent = target.vn;
+    sizeHole(target.h);
+
+    wall.style.transition = "none";
+    wall.style.opacity = "1";
+    wall.style.visibility = "visible";
+    wall.classList.remove("wl-bonk");
+    placeWall(0);
+
+    piece.className = "wl-piece";
+    piece.style.transition = "none";
+    piece.style.opacity = "1";
+    piece.style.scale = "1";
+    piece.style.visibility = "visible";
+    placePiece();
+
+    micEl.classList.add("wl-show");
+    heardEl.classList.remove("wl-show");
+    overlay.classList.remove("wl-still");
+    updateBar();
+
+    lastTs = performance.now();
+    playing = true;
+    startListening();
+  }
+
+  function curDuration() {
+    var T = STAGES[stageIdx].T * 1000;
+    return window.GD_SLOW ? T * (window.GD_SLOW_K || 1.8) : T;
+  }
+
+  function frame(ts) {
+    rafId = raf(frame);
+    if (!playing || paused) {
+      lastTs = ts;
+      return;
+    }
+    var dt = Math.min(ts - lastTs, 100);
+    lastTs = ts;
+    if (morphed) {
+      t += rushRate * dt;
+    } else {
+      t += dt / curDuration();
+    }
+    if (t >= 1) {
+      t = 1;
+      placeWall(1);
+      playing = false;
+      resolveQuestion();
+      return;
+    }
+    placeWall(t);
+  }
+
+  // bé đọc đúng (hoặc chạm) → hình đổi khớp lỗ
+  function morph() {
+    if (!playing || morphed || screen !== "play" || paused) {
+      return;
+    }
+    morphed = true;
+    morphT = t;
+    rushRate = (1 - t) / RUSH_MS;
+    stopListening();
+    piece.className = "wl-piece";
+    void piece.offsetWidth;
+    piece.className = "wl-piece wl-good";
+    sfxMorph();
+    burst(pieceHome.x, pieceHome.y, ["✨", "⭐"], 6);
+  }
+
+  function resolveQuestion() {
+    if (morphed) {
+      onPass();
+    } else {
+      onCrash();
+    }
+  }
+
+  function onPass() {
+    var holeX = sw / 2;
+    var holeY = baseY - wallH * 0.5;
+    sfxPass();
+
+    piece.style.transition = "left .4s ease-in, top .4s ease-in";
+    piece.style.left = holeX + "px";
+    piece.style.top = holeY + "px";
+
+    later(function () {
+      wall.style.transition = "transform .7s ease-in, opacity .7s ease-in";
+      wall.style.transform = wallBase(1) + "scale(3)";
+      wall.style.opacity = "0";
+      piece.style.transition = "scale .7s ease-in, opacity .7s ease-in";
+      piece.style.scale = "2.6";
+      piece.style.opacity = "0";
+      burst(holeX, holeY, ["🎉", "⭐", "✨", "🌟"], 12);
+    }, 420);
+
+    // điểm
+    var st = STAGES[stageIdx];
+    var base = anyMissThis ? Math.round(st.base / 2) : st.base;
+    var quick = morphT < 0.4 ? 5 : morphT < 0.7 ? 2 : 0;
+    combo++;
+    var comboBonus = Math.min(10, (combo - 1) * 2);
+    score += base + quick + comboBonus;
+    streak++;
+    var msg = ["Giỏi quá! 🎉", "Chui qua rồi! 🧱", "Tuyệt vời! ⭐", "Siêu quá! 🌟"][Math.floor(Math.random() * 4)];
+    if (streak % HEAL_EVERY === 0) {
+      if (lives < MAXLIVES) {
+        lives++;
+        msg = "+1 ❤️";
+      } else {
+        score += 30;
+        msg = "+30 💎";
+      }
+    }
+    updateBar();
+    banner(msg);
+
+    // nói lại cả từ cho bé nghe mẫu rồi sang câu sau
+    later(function () {
+      var done = false;
+
+      function go() {
+        if (done) {
+          return;
+        }
+        done = true;
+        advance();
+      }
+
+      AUDIO.play(target, function () {
+        later(go, 350);
+      });
+      later(go, 2600);
+    }, 900);
+  }
+
+  function onCrash() {
+    var cx = sw / 2;
+    var cy = baseY - wallH * 0.5;
+    lives--;
+    combo = 0;
+    streak = 0;
+    anyMissThis = true;
+    if (missed.indexOf(Q[qi]) < 0) {
+      missed.push(Q[qi]);
+    }
+    stopListening();
+    micEl.classList.remove("wl-live");
+    overlay.classList.add("wl-still");
+    wall.classList.add("wl-bonk");
+    piece.classList.add("wl-crash");
+    sfxBonk();
+    burst(cx, cy, ["💥", "💫"], 8);
+    banner("💥");
+    updateBar();
+
+    // cho bé nghe mẫu để lần sau đọc theo
+    AUDIO.play(target);
+
+    if (lives <= 0) {
+      later(function () {
+        renderEnd(false);
+      }, 1500);
+      return;
+    }
+    if (tries < 1) {
+      tries++;
+      later(function () {
+        startQuestion(true);
+      }, 1900);
+    } else {
+      later(advance, 1900);
+    }
+  }
+
+  function advance() {
+    qi++;
+    if (qi >= stageEnd[stageIdx]) {
+      if (stageIdx >= STAGES.length - 1) {
+        score += 50 + (missed.length === 0 ? 100 : 0);
+        renderEnd(true);
+        return;
+      }
+      stageBonus = 20 + 10 * lives;
+      score += stageBonus;
+      stageIdx++;
+      renderCover(stageIdx, false);
+      return;
+    }
+    startQuestion(false);
+  }
+
+  // ---------- màn mở đầu / kết thúc ----------
+  function hideField() {
+    wall.style.visibility = "hidden";
+    piece.style.visibility = "hidden";
+    micEl.classList.remove("wl-show");
+    noteEl.classList.remove("wl-show");
+  }
+
+  function renderCover(s, first) {
+    screen = "cover";
+    playing = false;
+    stopListening();
+    hideField();
+    var st = STAGES[s];
+    var sb = stageBonus;
+    stageBonus = 0;
+    var html = '<div class="wl-card">';
+    html += '<div class="wl-big">' + (first ? "🧱" : st.ico) + "</div>";
+    html += "<h2>" + (first ? "Chui lỗ tường" : "Chặng " + (s + 1) + " · " + st.name) + "</h2>";
+    if (first) {
+      html += '<p class="wl-subt">Đọc to từ trên tường cho mèo qua nhé!</p>';
+      if (SR) {
+        html += '<button class="wl-go wl-big-btn wl-mic-btn" id="wl-m-mic" type="button">🎤 Bắt đầu</button>';
+      } else {
+        html += '<p class="wl-meta">Máy này chưa hỗ trợ micro. Hãy mở game bằng Chrome, Edge hoặc Safari có mạng.</p>';
+      }
+    } else {
+      if (sb) {
+        html += '<div class="wl-bonus">🎁 +' + sb + " ⭐</div>";
+      }
+      html += '<button class="wl-go wl-big-btn" id="wl-ready" type="button">Sẵn sàng ▶</button>';
+    }
+    html += "</div>";
+    coverEl.innerHTML = html;
+    coverEl.classList.add("wl-on");
+    updateBar();
+    if (!first) {
+      sfxStage();
+    }
+  }
+
+  function chipHtml(id) {
+    var w = W[id];
+    return (
+      '<button class="wl-chip" type="button" data-w="' +
+      id +
+      '"><span class="cp">' +
+      w.py +
+      '</span><span class="ch">' +
+      w.h +
+      '</span><span class="cm">' +
+      w.vn +
+      "</span></button>"
+    );
+  }
+
+  function renderEnd(win) {
+    screen = "end";
+    playing = false;
+    epoch++;
+    stopListening();
+    AUDIO.stop();
+    hideField();
+
+    var perfect = win && missed.length === 0;
+    var best = loadBest();
+    var record = false;
+    if (score > best) {
+      best = score;
+      record = true;
+      saveBest(score);
+    }
+    var stars = win ? Math.max(1, Math.ceil((lives * 3) / MAXLIVES)) : 0;
+    var starHtml = "";
+    for (var i = 0; i < 3; i++) {
+      starHtml += '<span class="' + (i < stars ? "on" : "off") + '">⭐</span>';
+    }
+
+    var review = "";
+    if (missed.length) {
+      review = '<div><div class="wl-review-t">🔊 Nghe lại nhé:</div><div class="wl-chips">';
+      missed
+        .slice()
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .forEach(function (id) {
+          review += chipHtml(id);
+        });
+      review += "</div></div>";
+    }
+
+    var head = win
+      ? '<div class="wl-stars-row">' + starHtml + "</div><h2>" + (perfect ? "Siêu sao chui tường! 🌟" : "Giỏi lắm! 🎉") + "</h2>"
+      : '<div class="wl-big">💥</div><h2>Hết tim rồi! Thử lại nhé! 💪</h2>';
+    var meta = '<div class="wl-meta">⭐ ' + score + (record ? " · 🏅 Kỷ lục mới!" : " · 🏅 " + best) + "</div>";
+
+    coverEl.innerHTML =
+      '<div class="wl-card">' +
+      head +
+      review +
+      '<button class="wl-go wl-big-btn" id="wl-again" type="button">🔁 Chơi lại</button>' +
+      '<div class="wl-row"><button class="wl-go wl-alt wl-mini" id="wl-back" type="button" aria-label="Về menu" title="Về menu">🏠</button></div>' +
+      meta +
+      "</div>";
+    coverEl.classList.add("wl-on");
+    updateBar();
+    if (win) {
+      sfxPass();
+      for (var k = 0; k < 4; k++) {
+        burst(sw * (0.2 + 0.2 * k), sh * 0.3, ["🎉", "⭐", "🎊", "✨"], 8);
+      }
+    } else {
+      sfxBonk();
+    }
+  }
+
+  // ---------- thoát / tạm dừng ----------
+  function openDialog() {
+    if (screen === "end" || paused) {
+      return;
+    }
+    paused = true;
+    stopListening();
+    AUDIO.stop();
+    confirmEl.classList.add("wl-on");
+  }
+
+  function closeDialog() {
+    confirmEl.classList.remove("wl-on");
+    paused = false;
+    if (screen === "play" && playing) {
+      startListening();
+    }
+    var q = queued.slice();
+    queued = [];
+    q.forEach(function (fn) {
+      fn();
+    });
+  }
+
+  function exitToMenu() {
+    epoch++;
+    playing = false;
+    paused = false;
+    queued = [];
+    stopListening();
+    AUDIO.stop();
+    confirmEl.classList.remove("wl-on");
+    coverEl.classList.remove("wl-on");
+    overlay.classList.remove("wl-on");
+    if (window.GM_SHOW) {
+      window.GM_SHOW();
+    }
+  }
+
+  // ---------- sự kiện ----------
+  function beginPlay() {
+    coverEl.classList.remove("wl-on");
+    startQuestion(false);
+  }
+
+  coverEl.addEventListener("click", function (e) {
+    var el = e.target.closest("button");
+    if (!el) {
+      return;
+    }
+    if (el.id === "wl-m-mic") {
+      beginPlay();
+    } else if (el.id === "wl-ready") {
+      coverEl.classList.remove("wl-on");
+      startQuestion(false);
+    } else if (el.id === "wl-again") {
+      resetGame();
+      coverEl.classList.remove("wl-on");
+      renderCover(0, true);
+    } else if (el.id === "wl-back") {
+      exitToMenu();
+    } else if (el.getAttribute("data-w") !== null) {
+      AUDIO.play(W[parseInt(el.getAttribute("data-w"), 10)]);
+    }
+  });
+
+  // bấm vào biểu tượng micro: bật nghe lại (khi trình duyệt vừa chặn hoặc ngắt micro)
+  $("wl-mic-btn").addEventListener("click", function () {
+    if (screen === "play" && playing && !morphed && !paused) {
+      stopListening();
+      startListening();
+    }
+  });
+  $("wl-exit").addEventListener("click", openDialog);
+  $("wl-d-continue").addEventListener("click", closeDialog);
+  $("wl-d-quit").addEventListener("click", exitToMenu);
+
+  $("wl-listen").addEventListener("click", function () {
+    if (screen !== "play" || !target || paused) {
+      return;
+    }
+    stopListening();
+    AUDIO.play(target, function () {
+      if (playing && !morphed && !paused) {
+        startListening();
+      }
+    });
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (!overlay.classList.contains("wl-on")) {
+      return;
+    }
+    if (e.key === "r" || e.key === "R") {
+      $("wl-listen").click();
+    } else if (e.key === "Escape") {
+      if (paused) {
+        closeDialog();
+      } else {
+        openDialog();
+      }
+    }
+  });
+
+  window.addEventListener("resize", function () {
+    if (!overlay.classList.contains("wl-on")) {
+      return;
+    }
+    layout();
+    if (screen === "play" && target) {
+      sizeHole(target.h);
+      if (playing) {
+        placeWall(t);
+        placePiece();
+      }
+    }
+  });
+
+  // ---------- vào game ----------
+  function startGame() {
+    overlay.classList.add("wl-on");
+    resetGame();
+    renderCover(0, true);
+    if (!rafId) {
+      rafId = raf(frame);
+    }
+  }
+
+  window.GD_GAMES.push({
+    id: "wall",
+    ico: "🧱",
+    desc: "Chui lỗ tường",
+    cls: "gm-c5",
+    start: startGame
+  });
+})();
+</script>
 <script>
 /* MENU CHỌN GAME — mỗi game đăng ký vào window.GD_GAMES, và gọi window.GM_SHOW() khi bé thoát về menu */
 (function(){
